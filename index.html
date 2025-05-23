@@ -4,11 +4,37 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale= 0.6">
     <link data-rh="true" rel="icon" href="static/favicon.png">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #btc-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        #btc-container img {
+            width: 100px;
+            height: 100px;
+        }
+        #btc-container #btc-price-display {
+            display: block;
+            font-size: 24px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
-    <img src="static/favicon.png" alt="BTC Icon">
-    <span id="btc-price-display">Loading price...</span>
+    <div id="btc-container">
+        <img src="static/favicon.png" alt="BTC Icon">
+        <span id="btc-price-display">Loading price...</span>
+    </div>
 </body>
 <script type="text/javascript" src="js/bitcoinprice.js"></script>
 
