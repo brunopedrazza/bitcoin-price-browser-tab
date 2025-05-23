@@ -7,6 +7,7 @@ async function updateBitcoinPrice() {
     const bodyObj = JSON.parse(responseBody)
     const bitcoinPrice = bodyObj.data.amount
     document.title = "$" + bitcoinPrice.split(".")[0]
+    document.getElementById("btc-price-display").textContent = "$" + bitcoinPrice.split(".")[0];
 }
 
 updateBitcoinPrice()
