@@ -14,6 +14,8 @@
 - #coin-error div displays validation errors inline below the input
 - #coin-label is a clickable span showing current coin code (64px bold text)
 - Price from API is `bodyObj.data.amount` (a string) — display it directly, no parsing needed
+- `renderHistory()` rebuilds #coin-history tags from `coinHistory` array — called by `addToHistory()` and on page load
+- History tags are `<button class="history-tag">` elements inside #coin-history div
 ---
 
 ## 2026-03-21 - US-001
@@ -33,5 +35,17 @@
 - **Learnings for future iterations:**
   - Two places switch coins: `switchCoin()` and the inline Enter handler in `coinInput` keydown listener — both need updating for coin-switch side effects
   - `addToHistory` takes the *previous* coin as argument since `currentCoin` is already updated when it runs
+---
+
+## 2026-03-21 - US-003
+- Added #coin-history div below #btc-price-display in index.html
+- Added CSS for .history-tag buttons (small, muted, rounded badges)
+- Added `renderHistory()` function that creates clickable button tags from `coinHistory`
+- `renderHistory()` is called from `addToHistory()` (on every change) and on page load
+- Clicking a tag calls `switchCoin(coin)` + `startPolling()`
+- Files changed: index.html, js/bitcoinprice.js
+- **Learnings for future iterations:**
+  - `renderHistory()` clears and rebuilds #coin-history innerHTML each time — simple but effective for small lists
+  - History tags already handle click-to-switch via `switchCoin()`, which updates history and re-renders
 ---
 
