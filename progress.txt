@@ -8,6 +8,8 @@
 - No build tools, linting, or tests - this is a plain HTML/JS project
 - Search input: #coin-search (container div), #coin-input (text input), toggle via .visible class
 - `showSearch()` and `hideSearch()` functions control search input visibility
+- `startPolling()` clears and restarts the price update interval - use when switching coins
+- #coin-error div displays validation errors inline below the input
 ---
 
 ## 2026-03-21 - US-001
@@ -68,4 +70,18 @@
   - showSearch()/hideSearch() functions control input visibility - use these in US-006
   - coinLabel, coinSearch, coinInput are cached DOM references at module level
   - US-006 needs to add Enter key handler on coinInput to validate and switch coin
+---
+
+## 2026-03-21 - US-006
+- Added Enter key handler on coinInput that validates coin code against Coinbase API
+- On success: sets currentCoin, saves to localStorage, hides search, restarts polling via startPolling()
+- On failure (API error or no data): displays "Coin not found" in #coin-error div
+- Added #coin-error div in index.html with red text styling
+- Error clears on input (input event listener) or when search is hidden (hideSearch clears it)
+- Replaced bare updatePrice()/setInterval with startPolling() that clears and restarts the interval
+- Files changed: index.html, js/bitcoinprice.js
+- **Learnings for future iterations:**
+  - startPolling() must be called instead of updatePrice() when switching coins to reset the interval
+  - The Coinbase API returns {data: {amount: "..."}} on success; check for data.data.amount to validate
+  - Input value is trimmed and uppercased before API call for case-insensitive input
 ---
