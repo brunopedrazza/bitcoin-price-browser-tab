@@ -49,3 +49,14 @@
   - History tags already handle click-to-switch via `switchCoin()`, which updates history and re-renders
 ---
 
+## 2026-03-21 - US-004
+- No code changes needed — all acceptance criteria were already implemented in US-003
+- Click handler in `renderHistory()` calls `switchCoin(coin)` + `startPolling()`
+- `switchCoin()` persists selectedCoin to localStorage and calls `addToHistory(previousCoin)`
+- `addToHistory()` updates coinHistory (dedup, exclude active, cap at 5), persists to localStorage, and re-renders tags
+- Files changed: prd.json (marked passes: true)
+- **Learnings for future iterations:**
+  - US-003 and US-004 were tightly coupled — implementing display with click handlers naturally satisfied both stories
+  - When reviewing stories, check if prior work already covers the acceptance criteria before writing new code
+---
+
