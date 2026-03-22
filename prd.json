@@ -1,16 +1,17 @@
 {
   "project": "Bitcoin Price Browser Tab",
-  "branchName": "ralph/switchable-crypto-price",
-  "description": "Switchable Crypto Price Browser Tab - Allow users to switch between any Coinbase-supported cryptocurrency, one coin at a time, with persistent selection and clean UI",
+  "branchName": "ralph/price-fix-and-coin-history",
+  "description": "Fix sub-$1 coin prices showing as $0 and add a clickable history of the last 5 monitored coins",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Replace page icon with coin code label",
-      "description": "As a user, I want to see the current coin's ticker code displayed prominently on the page so I know which coin I'm monitoring.",
+      "title": "Show full price including decimals",
+      "description": "As a user, I want to see the full price of a coin so that sub-$1 coins like DOGE display their actual value instead of $0.",
       "acceptanceCriteria": [
-        "The BTC <img> element is replaced with a large, styled text element showing the current coin code (e.g. 'BTC')",
-        "The text label is visually prominent and centered, matching the previous icon layout",
-        "The static BTC favicon in the <link> tag remains unchanged"
+        "Price display shows the raw amount from the Coinbase API prefixed with $ (e.g. '$0.15432', '$68432.10')",
+        "Tab title shows the same full price (e.g. 'DOGE $0.15432')",
+        "The .split('.')[0] calls on lines 12 and 14 of bitcoinprice.js are removed",
+        "Verify in browser using dev-browser skill"
       ],
       "priority": 1,
       "passes": true,
@@ -18,76 +19,50 @@
     },
     {
       "id": "US-002",
-      "title": "Show coin code in tab title alongside price",
-      "description": "As a user, I want to see the coin code alongside the price in the browser tab title so I always know which coin I'm tracking.",
+      "title": "Store coin history in localStorage",
+      "description": "As a developer, I need to persist the last 5 monitored coins so they survive page reloads.",
       "acceptanceCriteria": [
-        "Tab title format is 'CODE $price' (e.g. 'BTC $68432')",
-        "The price continues to update every 5 seconds"
+        "A 'coinHistory' array is stored in localStorage as JSON",
+        "When a coin is successfully switched to, it is added to the front of the history array",
+        "Duplicate entries are removed so the most recent position wins",
+        "The array is capped at 5 entries maximum",
+        "The currently active coin is excluded from the history array",
+        "On page load, the history is read from localStorage and parsed"
       ],
       "priority": 2,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-003",
-      "title": "Make coin code and price update dynamically based on a variable",
-      "description": "As a developer, I need the fetch URL, page label, and tab title to use a configurable coin code variable so switching coins is possible.",
+      "title": "Display coin history as clickable tags below the price",
+      "description": "As a user, I want to see my recently monitored coins below the price so I can switch back with one click.",
       "acceptanceCriteria": [
-        "A currentCoin variable controls which coin is fetched from Coinbase API",
-        "The fetch URL uses the currentCoin variable: /v2/prices/{currentCoin}-USD/spot",
-        "The coin code label on the page reflects currentCoin",
-        "The tab title reflects currentCoin",
-        "Changing currentCoin and calling the update function fetches the new coin's price"
+        "A new div with id 'coin-history' is added below #btc-price-display in index.html",
+        "Recent coins render as small clickable tags/badges inside #coin-history",
+        "Tags are always visible (not hidden behind a menu)",
+        "The currently active coin does not appear in the tag list",
+        "Tags are styled subtly (small font, muted color, rounded) so they don't dominate the UI",
+        "Verify in browser using dev-browser skill"
       ],
       "priority": 3,
-      "passes": true,
+      "passes": false,
       "notes": ""
     },
     {
       "id": "US-004",
-      "title": "Persist selected coin in localStorage",
-      "description": "As a user, I want my selected coin to be remembered across page reloads so I don't have to re-select it every time.",
+      "title": "Click a history tag to switch coins",
+      "description": "As a user, I want to click a recent coin tag to immediately switch to monitoring that coin.",
       "acceptanceCriteria": [
-        "On page load, the app reads 'selectedCoin' from localStorage",
-        "If no value is saved, the app defaults to 'BTC'",
-        "When the coin is changed, the new coin code is saved to localStorage",
-        "If the saved coin fails to fetch on load, the app falls back to BTC"
+        "Clicking a history tag switches the monitored coin to that coin's code",
+        "The price polling restarts for the new coin via startPolling()",
+        "The coin history updates: clicked coin moves out of history, previous coin appears in history",
+        "localStorage is updated with both the new selectedCoin and updated coinHistory",
+        "The history tags re-render to reflect the updated state",
+        "Verify in browser using dev-browser skill"
       ],
       "priority": 4,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-005",
-      "title": "Click coin label to reveal search input",
-      "description": "As a user, I want to click the coin label to reveal a text input so I can type a new coin ticker code.",
-      "acceptanceCriteria": [
-        "Clicking the coin code label reveals a text input field below or in place of the label",
-        "The input is hidden by default - only the coin label and price are visible",
-        "Pressing Escape or clicking outside the input hides it without changing the coin",
-        "The input field is focused automatically when revealed",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 5,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-006",
-      "title": "Validate and switch coin on input submit",
-      "description": "As a user, I want the app to validate my coin code against Coinbase and switch to it if valid, or show an error if not.",
-      "acceptanceCriteria": [
-        "Pressing Enter in the input triggers a fetch to /v2/prices/{CODE}-USD/spot with the uppercased input value",
-        "If the API returns a successful response with price data, the app switches to that coin and hides the input",
-        "If the API returns an error, 'Coin not found' is displayed inline below the input",
-        "The current coin continues to be monitored while the error is displayed",
-        "The error message disappears when the user starts typing again or closes the input",
-        "On successful switch, the new coin code is saved to localStorage",
-        "The setInterval for price polling is cleared and restarted for the new coin",
-        "Verify in browser using dev-browser skill"
-      ],
-      "priority": 6,
-      "passes": true,
+      "passes": false,
       "notes": ""
     }
   ]
