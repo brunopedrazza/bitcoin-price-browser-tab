@@ -8,6 +8,22 @@ function addToHistory(previousCoin) {
     coinHistory = coinHistory.filter(c => c !== currentCoin);
     if (coinHistory.length > 5) coinHistory = coinHistory.slice(0, 5);
     localStorage.setItem("coinHistory", JSON.stringify(coinHistory));
+    renderHistory();
+}
+
+function renderHistory() {
+    const container = document.getElementById("coin-history");
+    container.innerHTML = "";
+    coinHistory.forEach(function (coin) {
+        const tag = document.createElement("button");
+        tag.className = "history-tag";
+        tag.textContent = coin;
+        tag.addEventListener("click", function () {
+            switchCoin(coin);
+            startPolling();
+        });
+        container.appendChild(tag);
+    });
 }
 
 async function updatePrice() {
@@ -47,6 +63,7 @@ function startPolling() {
 }
 
 startPolling();
+renderHistory();
 
 // Search input toggle
 const coinLabel = document.getElementById("coin-label");
