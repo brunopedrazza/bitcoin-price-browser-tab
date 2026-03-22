@@ -29,3 +29,36 @@ function switchCoin(newCoin) {
 
 updatePrice()
 setInterval(updatePrice, 5000);
+
+// Search input toggle
+const coinLabel = document.getElementById("coin-label");
+const coinSearch = document.getElementById("coin-search");
+const coinInput = document.getElementById("coin-input");
+
+function showSearch() {
+    coinSearch.classList.add("visible");
+    coinInput.value = "";
+    coinInput.focus();
+}
+
+function hideSearch() {
+    coinSearch.classList.remove("visible");
+    coinInput.value = "";
+}
+
+coinLabel.addEventListener("click", function (e) {
+    e.stopPropagation();
+    showSearch();
+});
+
+coinInput.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+        hideSearch();
+    }
+});
+
+document.addEventListener("click", function (e) {
+    if (!coinSearch.contains(e.target) && e.target !== coinLabel) {
+        hideSearch();
+    }
+});

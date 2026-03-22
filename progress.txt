@@ -1,0 +1,71 @@
+## Codebase Patterns
+- Main page is a single index.html with inline styles and one JS file (js/bitcoinprice.js)
+- Price fetched from Coinbase API: https://api.coinbase.com/v2/prices/{COIN}-USD/spot
+- Price display element id: btc-price-display, container id: btc-container
+- `currentCoin` variable in js/bitcoinprice.js controls which coin is fetched/displayed
+- Use `switchCoin(code)` to change coins - handles localStorage persistence + price refresh
+- Main update function is `updatePrice()` - call it after changing `currentCoin` to refresh
+- No build tools, linting, or tests - this is a plain HTML/JS project
+- Search input: #coin-search (container div), #coin-input (text input), toggle via .visible class
+- `showSearch()` and `hideSearch()` functions control search input visibility
+---
+
+## 2026-03-21 - US-001
+- Replaced `<img src="static/favicon.png">` with `<span id="coin-label">BTC</span>`
+- Added CSS for #coin-label: 64px bold text with system font stack
+- Removed #btc-container img CSS rule
+- Favicon `<link>` tag left unchanged
+- Files changed: index.html
+- **Learnings for future iterations:**
+  - The project has no build/lint/test setup, so quality checks are visual/manual
+  - The coin label element id is `coin-label` - use this for future dynamic updates
+---
+
+## 2026-03-21 - US-002
+- Changed `document.title` from `"$" + price` to `"BTC $" + price` in js/bitcoinprice.js
+- Tab title now shows format: `BTC $68432`
+- Price continues to update every 5 seconds (setInterval unchanged)
+- Files changed: js/bitcoinprice.js
+- **Learnings for future iterations:**
+  - Tab title is set in the `updateBitcoinPrice()` function in js/bitcoinprice.js line 9
+  - When US-003 introduces the currentCoin variable, the title prefix needs to use that variable instead of hardcoded "BTC"
+---
+
+## 2026-03-21 - US-003
+- Introduced `currentCoin` variable (defaults to "BTC") that controls fetch URL, page label, and tab title
+- Renamed `updateBitcoinPrice()` to `updatePrice()` to reflect it's now generic
+- Fetch URL now uses `currentCoin`: `/v2/prices/{currentCoin}-USD/spot`
+- `coin-label` element text is updated dynamically from `currentCoin` on each tick
+- Tab title uses `currentCoin` prefix instead of hardcoded "BTC"
+- Files changed: js/bitcoinprice.js
+- **Learnings for future iterations:**
+  - `currentCoin` is a module-level `let` variable - change it and call `updatePrice()` to switch coins
+  - The setInterval still references `updatePrice` so polling continues after any coin switch
+  - US-004 will need to read/write `currentCoin` from localStorage on load and on change
+---
+
+## 2026-03-21 - US-004
+- `currentCoin` now initializes from `localStorage.getItem("selectedCoin") || "BTC"`
+- Added `switchCoin(newCoin)` helper that sets `currentCoin`, saves to localStorage, and calls `updatePrice()`
+- Wrapped `updatePrice()` body in try/catch; on fetch failure, falls back to BTC and saves to localStorage
+- Files changed: js/bitcoinprice.js
+- **Learnings for future iterations:**
+  - Use `switchCoin(code)` to change coins - it handles localStorage + updatePrice in one call
+  - The fallback logic only triggers if `currentCoin !== "BTC"` to avoid infinite recursion
+  - US-005/US-006 should call `switchCoin()` rather than setting `currentCoin` directly
+---
+
+## 2026-03-21 - US-005
+- Added #coin-search div with #coin-input text field below the price display in index.html
+- Input hidden by default (display:none), shown via .visible class toggle
+- Clicking #coin-label calls showSearch() which adds .visible class and focuses input
+- Pressing Escape hides input without changing coin
+- Clicking outside input/label hides it (document click listener)
+- Added CSS for input styling: centered, uppercase, rounded border
+- Made #coin-label cursor:pointer to indicate clickability
+- Files changed: index.html, js/bitcoinprice.js
+- **Learnings for future iterations:**
+  - showSearch()/hideSearch() functions control input visibility - use these in US-006
+  - coinLabel, coinSearch, coinInput are cached DOM references at module level
+  - US-006 needs to add Enter key handler on coinInput to validate and switch coin
+---
