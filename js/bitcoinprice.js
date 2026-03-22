@@ -1,14 +1,17 @@
 
-async function updateBitcoinPrice() {
-    var response = await fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot", {
+let currentCoin = "BTC";
+
+async function updatePrice() {
+    var response = await fetch("https://api.coinbase.com/v2/prices/" + currentCoin + "-USD/spot", {
         method: "GET"
     })
     const responseBody = await response.text()
     const bodyObj = JSON.parse(responseBody)
-    const bitcoinPrice = bodyObj.data.amount
-    document.title = "BTC $" + bitcoinPrice.split(".")[0]
-    document.getElementById("btc-price-display").textContent = "$" + bitcoinPrice.split(".")[0];
+    const price = bodyObj.data.amount
+    document.title = currentCoin + " $" + price.split(".")[0]
+    document.getElementById("coin-label").textContent = currentCoin;
+    document.getElementById("btc-price-display").textContent = "$" + price.split(".")[0];
 }
 
-updateBitcoinPrice()
-setInterval(updateBitcoinPrice, 5000);
+updatePrice()
+setInterval(updatePrice, 5000);
