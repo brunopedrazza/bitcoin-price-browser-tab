@@ -30,7 +30,7 @@
         "On page load, the history is read from localStorage and parsed"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

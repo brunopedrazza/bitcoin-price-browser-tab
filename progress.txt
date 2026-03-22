@@ -9,6 +9,8 @@
 - Search input: #coin-search (container div), #coin-input (text input), toggle via .visible class
 - `showSearch()` and `hideSearch()` functions control search input visibility
 - `startPolling()` clears and restarts the price update interval - use when switching coins
+- `addToHistory(previousCoin)` handles coinHistory updates — dedup, exclude active, cap at 5, persist to localStorage
+- Two places switch coins: `switchCoin()` and inline Enter handler — both call `addToHistory`
 - #coin-error div displays validation errors inline below the input
 - #coin-label is a clickable span showing current coin code (64px bold text)
 - Price from API is `bodyObj.data.amount` (a string) — display it directly, no parsing needed
@@ -20,5 +22,16 @@
 - **Learnings for future iterations:**
   - The price value from Coinbase API is already a formatted string — just prefix with `$`
   - No build/lint/test steps needed for this plain HTML/JS project
+---
+
+## 2026-03-21 - US-002
+- Added `coinHistory` array persisted in localStorage as JSON
+- Added `addToHistory(previousCoin)` function that deduplicates, excludes active coin, and caps at 5
+- Called `addToHistory` from both `switchCoin()` and the search input Enter handler
+- History is loaded from localStorage on page load
+- Files changed: js/bitcoinprice.js
+- **Learnings for future iterations:**
+  - Two places switch coins: `switchCoin()` and the inline Enter handler in `coinInput` keydown listener — both need updating for coin-switch side effects
+  - `addToHistory` takes the *previous* coin as argument since `currentCoin` is already updated when it runs
 ---
 
