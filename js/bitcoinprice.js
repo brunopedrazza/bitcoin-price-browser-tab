@@ -1,5 +1,14 @@
 
 let currentCoin = localStorage.getItem("selectedCoin") || "BTC";
+let coinHistory = JSON.parse(localStorage.getItem("coinHistory") || "[]");
+
+function addToHistory(previousCoin) {
+    coinHistory = coinHistory.filter(c => c !== previousCoin);
+    coinHistory.unshift(previousCoin);
+    coinHistory = coinHistory.filter(c => c !== currentCoin);
+    if (coinHistory.length > 5) coinHistory = coinHistory.slice(0, 5);
+    localStorage.setItem("coinHistory", JSON.stringify(coinHistory));
+}
 
 async function updatePrice() {
     try {
@@ -22,8 +31,10 @@ async function updatePrice() {
 }
 
 function switchCoin(newCoin) {
+    const previousCoin = currentCoin;
     currentCoin = newCoin;
     localStorage.setItem("selectedCoin", currentCoin);
+    addToHistory(previousCoin);
     updatePrice();
 }
 
@@ -72,8 +83,10 @@ coinInput.addEventListener("keydown", async function (e) {
             const response = await fetch("https://api.coinbase.com/v2/prices/" + code + "-USD/spot");
             const data = await response.json();
             if (data.data && data.data.amount) {
+                const previousCoin = currentCoin;
                 currentCoin = code;
                 localStorage.setItem("selectedCoin", currentCoin);
+                addToHistory(previousCoin);
                 hideSearch();
                 startPolling();
             } else {
